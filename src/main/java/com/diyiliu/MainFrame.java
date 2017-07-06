@@ -32,6 +32,7 @@ public class MainFrame extends JFrame {
 
         this.setIconImage(new ImageIcon(ClassLoader.getSystemResource("tank1.png")).getImage());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setResizable(false);
         this.setVisible(true);
 
         Thread drawThread = new Thread(drawPanel);

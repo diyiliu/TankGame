@@ -5,6 +5,7 @@ import com.diyiliu.model.Bullet;
 import com.diyiliu.model.EnemyTank;
 import com.diyiliu.model.HeroTank;
 import com.diyiliu.model.base.Tank;
+import com.diyiliu.thread.ProductEnemyTank;
 import com.diyiliu.util.Constant;
 
 import javax.swing.*;
@@ -12,6 +13,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Description: DrawPanel
@@ -22,7 +24,7 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
 
     private HeroTank heroTank;
 
-    private int enemyCount = 5;
+    private AtomicInteger enemyCount = new AtomicInteger(20);
 
     private Vector<EnemyTank> enemyTanks = new Vector<>();
 
@@ -30,26 +32,18 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
 
     private Vector<Bomb> bombs = new Vector<>();
 
+    private ImageIcon starImage;
+
     public DrawPanel() {
 
         heroTank = new HeroTank();
-        heroTank.setSpeed(3);
+        heroTank.setSpeed(5);
         heroTank.getLives().set(3);
         heroTanks.add(heroTank);
 
-        for (int i = 0; i < enemyCount; i++) {
-            EnemyTank enemyTank = new EnemyTank();
-            enemyTank.setX(i * 180 + 15);
-            enemyTank.setY(10);
+        new ProductEnemyTank(enemyCount, enemyTanks).start();
 
-            enemyTank.setDirect(Constant.Derict.DERICT_DOWN);
-            enemyTank.setColor(Color.CYAN);
-
-            enemyTanks.add(enemyTank);
-
-            new Thread(enemyTank).start();
-        }
-
+        starImage = new ImageIcon(ClassLoader.getSystemResource("star3.png"));
     }
 
     @Override
@@ -69,8 +63,12 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-
         g.fillRect(0, 0, getWidth(), getHeight());
+
+        if (enemyCount.get() == 20){
+
+            drawStar(g);
+        }
 
         if (heroTank.getLives().get() > 0) {
 
@@ -85,7 +83,6 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
 
             drawTank(enemyTank, g);
             drawBullet(enemyTank, g, heroTanks);
-
         }
 
         for (int i = 0; i < bombs.size(); i++) {
@@ -100,6 +97,7 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
             }
         }
     }
+
 
     public void drawTank(Tank tank, Graphics g) {
 
@@ -214,6 +212,19 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
                 g.setColor(bullet.getColor());
                 g.draw3DRect(bullet.getX(), bullet.getY(), 1, 1, true);
             }
+        }
+    }
+
+
+    public void drawStar(Graphics g){
+
+        g.drawImage(starImage.getImage(), 10, 10, 30, 30, this);
+        if (starImage.getDescription().contains("star3")){
+
+            starImage = new ImageIcon(ClassLoader.getSystemResource("star4.png"));
+        }else if (starImage.getDescription().contains("star4")){
+
+            starImage = new ImageIcon(ClassLoader.getSystemResource("star3.png"));
         }
     }
 
