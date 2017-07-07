@@ -16,9 +16,9 @@ public class HeroTank extends Tank {
 
         color = Color.YELLOW;
         type = Constant.Army.ARMY_HERO;
-        x = Constant.Draw.PANEL_WIDTH / 2 - 15;
-        y = Constant.Draw.PANEL_HEIGHT - 80;
-        direct = Constant.Derict.DIRECT_UP;
+        x = Constant.Config.PANEL_WIDTH / 2 - 15;
+        y = Constant.Config.PANEL_HEIGHT - Constant.Config.DOWN_OFFSET;
+        direct = Constant.Direct.DIRECT_UP;
     }
 
     @Override

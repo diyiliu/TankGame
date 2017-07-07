@@ -47,8 +47,8 @@ public class ProductEnemyTank extends Thread {
             enemyTank.setX(10);
             enemyTank.setY(10);
             enemyTank.setSpeed(2);
-            enemyTank.getBulletCount().set(2);
-            enemyTank.setDirect(Constant.Derict.DIRECT_DOWN);
+            enemyTank.getBulletCount().set(1);
+            enemyTank.setDirect(Constant.Direct.DIRECT_DOWN);
             enemyTank.setColor(Color.CYAN);
             enemyTanks.add(enemyTank);
             new Thread(enemyTank).start();

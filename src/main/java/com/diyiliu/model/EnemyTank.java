@@ -46,7 +46,7 @@ public class EnemyTank extends Tank implements Runnable {
 
         int step = (int) (Math.random() * 50 + 20);
         switch (direct) {
-            case Constant.Derict.DIRECT_UP:
+            case Constant.Direct.DIRECT_UP:
 
                 for (int i = 0; i < step; i++) {
                     try {
@@ -60,7 +60,7 @@ public class EnemyTank extends Tank implements Runnable {
                 }
 
                 break;
-            case Constant.Derict.DIRECT_LEFT:
+            case Constant.Direct.DIRECT_LEFT:
 
                 for (int i = 0; i < step; i++) {
                     try {
@@ -73,7 +73,7 @@ public class EnemyTank extends Tank implements Runnable {
                     }
                 }
                 break;
-            case Constant.Derict.DIRECT_DOWN:
+            case Constant.Direct.DIRECT_DOWN:
 
                 for (int i = 0; i < step; i++) {
                     try {
@@ -86,7 +86,7 @@ public class EnemyTank extends Tank implements Runnable {
                     }
                 }
                 break;
-            case Constant.Derict.DIRECT_RIGHT:
+            case Constant.Direct.DIRECT_RIGHT:
 
                 for (int i = 0; i < step; i++) {
                     try {

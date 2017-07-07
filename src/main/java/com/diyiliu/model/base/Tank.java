@@ -38,13 +38,6 @@ public class Tank {
 
     }
 
-    public Tank(int x, int y, int direct, Color color) {
-        this.x = x;
-        this.y = y;
-        this.direct = direct;
-        this.color = color;
-    }
-
     /**
      * 装弹
      */
@@ -69,7 +62,7 @@ public class Tank {
     }
 
     public boolean moveUP() {
-        setDirect(Constant.Derict.DIRECT_UP);
+        setDirect(Constant.Direct.DIRECT_UP);
         y = getY() - getSpeed();
 
         if (y < 0) {
@@ -84,7 +77,7 @@ public class Tank {
     }
 
     public boolean moveLeft() {
-        setDirect(Constant.Derict.DIRECT_LEFT);
+        setDirect(Constant.Direct.DIRECT_LEFT);
         x = getX() - getSpeed();
 
         if (x < 0) {
@@ -100,11 +93,11 @@ public class Tank {
     }
 
     public boolean moveDown() {
-        setDirect(Constant.Derict.DIRECT_DOWN);
+        setDirect(Constant.Direct.DIRECT_DOWN);
         y = getY() + getSpeed();
 
-        if (y + 80 > Constant.Draw.PANEL_HEIGHT) {
-            setY(Constant.Draw.PANEL_HEIGHT - 80);
+        if (y + Constant.Config.DOWN_OFFSET > Constant.Config.PANEL_HEIGHT) {
+            setY(Constant.Config.PANEL_HEIGHT - Constant.Config.DOWN_OFFSET);
             movable = false;
         } else {
             setY(y);
@@ -115,11 +108,11 @@ public class Tank {
     }
 
     public boolean moveRight() {
-        setDirect(Constant.Derict.DIRECT_RIGHT);
+        setDirect(Constant.Direct.DIRECT_RIGHT);
         x = getX() + getSpeed();
 
-        if (x + 45 > Constant.Draw.PANEL_WIDTH) {
-            setX(Constant.Draw.PANEL_WIDTH - 45);
+        if (x + Constant.Config.RIGHT_OFFSET > Constant.Config.PANEL_WIDTH) {
+            setX(Constant.Config.PANEL_WIDTH - Constant.Config.RIGHT_OFFSET);
             movable = false;
         } else {
             setX(x);
@@ -135,7 +128,7 @@ public class Tank {
 
         Tank tank;
         switch (direct) {
-            case Constant.Derict.DIRECT_UP:
+            case Constant.Direct.DIRECT_UP:
                 for (int i = 0; i < size; i++) {
                     tank = (Tank) tanks.get(i);
 
@@ -147,7 +140,7 @@ public class Tank {
                     }
                 }
                 break;
-            case Constant.Derict.DIRECT_LEFT:
+            case Constant.Direct.DIRECT_LEFT:
 
                 for (int i = 0; i < size; i++) {
                     tank = (Tank) tanks.get(i);
@@ -160,7 +153,7 @@ public class Tank {
                     }
                 }
                 break;
-            case Constant.Derict.DIRECT_DOWN:
+            case Constant.Direct.DIRECT_DOWN:
                 for (int i = 0; i < size; i++) {
                     tank = (Tank) tanks.get(i);
 
@@ -172,7 +165,7 @@ public class Tank {
                     }
                 }
                 break;
-            case Constant.Derict.DIRECT_RIGHT:
+            case Constant.Direct.DIRECT_RIGHT:
 
                 for (int i = 0; i < size; i++) {
                     tank = (Tank) tanks.get(i);
@@ -196,19 +189,19 @@ public class Tank {
         int direct = getDirect();
         int i, j;
         switch (direct) {
-            case Constant.Derict.DIRECT_UP:
+            case Constant.Direct.DIRECT_UP:
                 i = getX() + 15;
                 j = getY();
                 break;
-            case Constant.Derict.DIRECT_LEFT:
+            case Constant.Direct.DIRECT_LEFT:
                 i = getX();
                 j = getY() + 15;
                 break;
-            case Constant.Derict.DIRECT_DOWN:
+            case Constant.Direct.DIRECT_DOWN:
                 i = getX() + 15;
                 j = getY() + 30;
                 break;
-            case Constant.Derict.DIRECT_RIGHT:
+            case Constant.Direct.DIRECT_RIGHT:
                 i = getX() + 30;
                 j = getY() + 15;
                 break;

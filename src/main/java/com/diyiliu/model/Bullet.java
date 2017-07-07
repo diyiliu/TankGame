@@ -44,19 +44,19 @@ public class Bullet extends Thread {
 
             switch (direct) {
 
-                case Constant.Derict.DIRECT_UP:
+                case Constant.Direct.DIRECT_UP:
 
                     y -= speed;
                     break;
-                case Constant.Derict.DIRECT_LEFT:
+                case Constant.Direct.DIRECT_LEFT:
 
                     x -= speed;
                     break;
-                case Constant.Derict.DIRECT_DOWN:
+                case Constant.Direct.DIRECT_DOWN:
 
                     y += speed;
                     break;
-                case Constant.Derict.DIRECT_RIGHT:
+                case Constant.Direct.DIRECT_RIGHT:
 
                     x += speed;
                     break;
@@ -64,7 +64,7 @@ public class Bullet extends Thread {
                     break;
             }
 
-            if (x < 0 || y < 0 || x > Constant.Draw.PANEL_WIDTH || y > Constant.Draw.PANEL_HEIGHT){
+            if (x < 0 || y < 0 || x > Constant.Config.PANEL_WIDTH || y > Constant.Config.PANEL_HEIGHT){
 
                 break;
             }
