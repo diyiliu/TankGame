@@ -1,8 +1,8 @@
 package com.diyiliu.panel;
 
+import com.diyiliu.panel.base.BasePanel;
 import com.diyiliu.util.Constant;
 
-import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -10,7 +10,7 @@ import java.awt.*;
  * Author: DIYILIU
  * Update: 2017-07-07 15:49
  */
-public class LevelPanel extends JPanel implements Runnable {
+public class LevelPanel extends BasePanel implements Runnable {
 
     private int level;
 
@@ -25,6 +25,11 @@ public class LevelPanel extends JPanel implements Runnable {
     public void paint(Graphics g) {
         super.paint(g);
         g.fillRect(0, 0, Constant.Config.PANEL_WIDTH, Constant.Config.PANEL_HEIGHT);
+        g.setColor(Color.GRAY);
+        g.fillRect(Constant.Config.PANEL_WIDTH, 0,
+                Constant.Config.FRAME_WIDTH - Constant.Config.PANEL_WIDTH, Constant.Config.FRAME_HEIGHT);
+
+        drawTopList(g);
 
         Font font = new Font("黑体", Font.BOLD, 20);
         g.setFont(font);
@@ -33,6 +38,23 @@ public class LevelPanel extends JPanel implements Runnable {
             g.setColor(Color.WHITE);
             g.drawString("stage: " + level, Constant.Config.PANEL_WIDTH / 2  - 50 , Constant.Config.PANEL_HEIGHT / 2 - 50);
         }
+    }
+
+    public void drawTopList(Graphics g){
+
+        g.drawImage(flagImg.getImage(), Constant.Config.PANEL_WIDTH + 20, 10,
+                20, 20, this);
+
+        Font font = new Font("宋体", Font.BOLD, 15);
+        g.setFont(font);
+        g.setColor(Color.white);
+        g.drawString("积分榜", Constant.Config.PANEL_WIDTH + 50, 30);
+
+        font = new Font("微软雅黑", Font.PLAIN, 12);
+        g.setFont(font);
+        g.drawString("top1: 900", Constant.Config.PANEL_WIDTH + 20, 50);
+        g.drawString("top2: 500", Constant.Config.PANEL_WIDTH + 20, 70);
+        g.drawString("top3: 200", Constant.Config.PANEL_WIDTH + 20, 90);
     }
 
     @Override

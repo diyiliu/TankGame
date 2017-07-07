@@ -28,8 +28,8 @@ public class MainFrame extends JFrame implements ActionListener {
 
         JMenuBar jmb = new JMenuBar();
 
-        JMenu jm = new JMenu("菜单 (M)");
-        jm.setMnemonic(KeyEvent.VK_M);
+        JMenu jm = new JMenu("游戏 (G)");
+        jm.setMnemonic(KeyEvent.VK_G);
 
         JMenuItem jmi1 = new JMenuItem("开始 (S)");
         jmi1.setMnemonic(KeyEvent.VK_S);
@@ -50,7 +50,6 @@ public class MainFrame extends JFrame implements ActionListener {
         jm.add(jmi1);
         jm.add(jmi2);
         jm.add(jmi3);
-
 
         levelPanel = new LevelPanel(1);
         this.add(levelPanel);
