@@ -22,15 +22,19 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class DrawPanel extends JPanel implements KeyListener, Runnable {
 
+    // 英雄坦克
     private HeroTank heroTank;
 
-    private AtomicInteger enemyCount = new AtomicInteger(20);
+    private int enCount = 1;
+    private AtomicInteger enemyCount = new AtomicInteger(enCount);
 
-    private Vector<EnemyTank> enemyTanks = new Vector<>();
+    private Vector<Tank> tanks = new Vector<>();
 
-    private Vector<HeroTank> heroTanks = new Vector<>();
-
+    // 子弹
+    private Vector<Bullet> bullets = new Vector<>();
+    // 爆炸
     private Vector<Bomb> bombs = new Vector<>();
+
 
     private ImageIcon starImage;
 
@@ -39,9 +43,11 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
         heroTank = new HeroTank();
         heroTank.setSpeed(5);
         heroTank.getLives().set(3);
-        heroTanks.add(heroTank);
+        heroTank.getBulletCount().set(3);
 
-        new ProductEnemyTank(enemyCount, enemyTanks).start();
+        tanks.add(heroTank);
+
+        new ProductEnemyTank(enemyCount, tanks, bullets).start();
 
         starImage = new ImageIcon(ClassLoader.getSystemResource("star3.png"));
     }
@@ -65,24 +71,24 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
         super.paint(g);
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        if (enemyCount.get() == 20){
+        if (enemyCount.get() == enCount) {
 
             drawStar(g);
         }
 
-        if (heroTank.getLives().get() > 0) {
+        for (int i = 0; i < bullets.size(); i++) {
 
-            drawTank(heroTank, g);
-            drawBullet(heroTank, g, enemyTanks);
+            drawBullet(bullets.get(i), g, tanks);
         }
 
+        for (int i = 0; i < tanks.size(); i++) {
 
-        for (int i = 0; i < enemyTanks.size(); i++) {
+            Tank tank = tanks.get(i);
 
-            EnemyTank enemyTank = enemyTanks.get(i);
+            if (tank.getLives().get() > 0) {
 
-            drawTank(enemyTank, g);
-            drawBullet(enemyTank, g, heroTanks);
+                drawTank(tank, g);
+            }
         }
 
         for (int i = 0; i < bombs.size(); i++) {
@@ -107,7 +113,7 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
         int y = tank.getY();
         switch (tank.getDirect()) {
 
-            case Constant.Derict.DERICT_UP:
+            case Constant.Derict.DIRECT_UP:
 
                 g.fill3DRect(x, y, 8, 30, false);
                 g.fill3DRect(x + 8, y + 10, 14, 15, false);
@@ -124,7 +130,7 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
                 }
 
                 break;
-            case Constant.Derict.DERICT_LEFT:
+            case Constant.Derict.DIRECT_LEFT:
 
                 g.fill3DRect(x, y, 30, 8, false);
                 g.fill3DRect(x + 10, y + 8, 15, 14, false);
@@ -140,7 +146,7 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
                 }
 
                 break;
-            case Constant.Derict.DERICT_DOWN:
+            case Constant.Derict.DIRECT_DOWN:
 
                 g.fill3DRect(x, y, 8, 30, false);
                 g.fill3DRect(x + 8, y + 5, 14, 15, false);
@@ -156,7 +162,7 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
                 }
 
                 break;
-            case Constant.Derict.DERICT_RIGHT:
+            case Constant.Derict.DIRECT_RIGHT:
 
                 g.fill3DRect(x, y, 30, 8, false);
                 g.fill3DRect(x + 5, y + 8, 15, 14, false);
@@ -177,24 +183,23 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
         }
     }
 
-    public void drawBullet(Tank tank, Graphics g, Vector tanks) {
+    public void drawBullet(Bullet bullet, Graphics g, Vector tanks) {
 
-        if (tank.getBullet() != null && tank.getBullet().isAlive()) {
-            Bullet bullet = tank.getBullet();
+        if (bullet.isAlive()) {
 
             boolean hit = false;
             if (tanks != null && tanks.size() > 0) {
                 for (int i = 0; i < tanks.size(); i++) {
 
                     Tank t = (Tank) tanks.get(i);
-                    if (hitTank(bullet, t)) {
+                    if (hitTank(bullet, t, false)) {
                         hit = true;
 
                         // 子弹终结
                         bullet.setLive(false);
+
                         // 坦克生命减一
                         int life = t.getLives().decrementAndGet();
-
                         if (life < 1) {
 
                             Bomb bomb = new Bomb(t.getX(), t.getY());
@@ -216,13 +221,13 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
     }
 
 
-    public void drawStar(Graphics g){
+    public void drawStar(Graphics g) {
 
         g.drawImage(starImage.getImage(), 10, 10, 30, 30, this);
-        if (starImage.getDescription().contains("star3")){
+        if (starImage.getDescription().contains("star3")) {
 
             starImage = new ImageIcon(ClassLoader.getSystemResource("star4.png"));
-        }else if (starImage.getDescription().contains("star4")){
+        } else if (starImage.getDescription().contains("star4")) {
 
             starImage = new ImageIcon(ClassLoader.getSystemResource("star3.png"));
         }
@@ -235,7 +240,12 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
      * @param tank
      * @return
      */
-    public boolean hitTank(Bullet bullet, Tank tank) {
+    public boolean hitTank(Bullet bullet, Tank tank, Boolean friendlyFire) {
+
+        if (!friendlyFire && bullet.getType() == tank.getType()) {
+
+            return false;
+        }
 
         if (bullet.getX() > tank.getX() && bullet.getX() < tank.getX() + 30
                 && bullet.getY() > tank.getY() && bullet.getY() < tank.getY() + 30) {
@@ -258,31 +268,57 @@ public class DrawPanel extends JPanel implements KeyListener, Runnable {
         switch (e.getKeyCode()) {
 
             case KeyEvent.VK_UP:
-
+                if (heroTank.checkTouch(tanks)) {
+                    if (heroTank.getDirect() == Constant.Derict.DIRECT_UP) {
+                        break;
+                    }
+                }
                 heroTank.moveUP();
+
                 break;
             case KeyEvent.VK_LEFT:
-
+                if (heroTank.checkTouch(tanks)) {
+                    if (heroTank.getDirect() == Constant.Derict.DIRECT_LEFT) {
+                        break;
+                    }
+                }
                 heroTank.moveLeft();
+
                 break;
             case KeyEvent.VK_DOWN:
-
+                if (heroTank.checkTouch(tanks)) {
+                    if (heroTank.getDirect() == Constant.Derict.DIRECT_DOWN) {
+                        break;
+                    }
+                }
                 heroTank.moveDown();
+
                 break;
             case KeyEvent.VK_RIGHT:
-
+                if (heroTank.checkTouch(tanks)) {
+                    if (heroTank.getDirect() == Constant.Derict.DIRECT_RIGHT) {
+                        break;
+                    }
+                }
                 heroTank.moveRight();
+
                 break;
 
             case KeyEvent.VK_SPACE:
 
-                if (heroTank.getBullet() != null && heroTank.getBullet().isAlive()) {
+                AtomicInteger bulletCount = heroTank.getBulletCount();
+                if (bulletCount.get() < 1 && !heroTank.loadBullets()) {
                     break;
                 }
 
                 Bullet bullet = heroTank.shootBullet();
-                heroTank.setBullet(bullet);
+                bullet.setType(Constant.Army.ARMY_HERO);
                 bullet.start();
+
+                bulletCount.decrementAndGet();
+                heroTank.getBullets().add(bullet);
+
+                bullets.add(bullet);
 
                 break;
             default:

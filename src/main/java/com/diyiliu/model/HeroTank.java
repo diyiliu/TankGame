@@ -14,13 +14,11 @@ public class HeroTank extends Tank {
 
     public HeroTank() {
 
-        // 英雄
-        type = Constant.Army.ARMY_HERO;
-
         color = Color.YELLOW;
+        type = Constant.Army.ARMY_HERO;
         x = Constant.Draw.PANEL_WIDTH / 2 - 15;
         y = Constant.Draw.PANEL_HEIGHT - 80;
-        direct = Constant.Derict.DERICT_UP;
+        direct = Constant.Derict.DIRECT_UP;
     }
 
     @Override

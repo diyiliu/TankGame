@@ -1,6 +1,7 @@
 package com.diyiliu.model;
 
 import com.diyiliu.model.base.Tank;
+import com.diyiliu.thread.EnemyShoot;
 import com.diyiliu.util.Constant;
 
 import java.util.Vector;
@@ -13,14 +14,20 @@ import java.util.Vector;
 public class EnemyTank extends Tank implements Runnable {
 
     private Vector tanks;
+    private Vector bulletVector;
 
-    public EnemyTank(Vector tanks) {
+    public EnemyTank(Vector tanks, Vector bullets) {
 
+        this.type = Constant.Army.ARMY_ENEMY;
         this.tanks = tanks;
+        this.bulletVector = bullets;
     }
 
     @Override
     public void run() {
+
+        // 发射子弹
+        new Thread(new EnemyShoot(this, bulletVector)).start();
 
         while (lives.get() > 0) {
 
@@ -32,13 +39,6 @@ public class EnemyTank extends Tank implements Runnable {
 
             int direct = (int) (Math.random() * 4);
             persistMove(direct);
-
-            if (this.getBullet() == null || !this.getBullet().isAlive()) {
-
-                Bullet bullet = this.shootBullet();
-                this.setBullet(bullet);
-                bullet.start();
-            }
         }
     }
 
@@ -46,7 +46,7 @@ public class EnemyTank extends Tank implements Runnable {
 
         int step = (int) (Math.random() * 50 + 20);
         switch (direct) {
-            case Constant.Derict.DERICT_UP:
+            case Constant.Derict.DIRECT_UP:
 
                 for (int i = 0; i < step; i++) {
                     try {
@@ -60,7 +60,7 @@ public class EnemyTank extends Tank implements Runnable {
                 }
 
                 break;
-            case Constant.Derict.DERICT_LEFT:
+            case Constant.Derict.DIRECT_LEFT:
 
                 for (int i = 0; i < step; i++) {
                     try {
@@ -73,7 +73,7 @@ public class EnemyTank extends Tank implements Runnable {
                     }
                 }
                 break;
-            case Constant.Derict.DERICT_DOWN:
+            case Constant.Derict.DIRECT_DOWN:
 
                 for (int i = 0; i < step; i++) {
                     try {
@@ -86,7 +86,7 @@ public class EnemyTank extends Tank implements Runnable {
                     }
                 }
                 break;
-            case Constant.Derict.DERICT_RIGHT:
+            case Constant.Derict.DIRECT_RIGHT:
 
                 for (int i = 0; i < step; i++) {
                     try {
@@ -102,13 +102,5 @@ public class EnemyTank extends Tank implements Runnable {
             default:
                 break;
         }
-    }
-
-    public Vector getTanks() {
-        return tanks;
-    }
-
-    public void setTanks(Vector tanks) {
-        this.tanks = tanks;
     }
 }

@@ -1,6 +1,8 @@
 package com.diyiliu.thread;
 
+import com.diyiliu.model.Bullet;
 import com.diyiliu.model.EnemyTank;
+import com.diyiliu.model.base.Tank;
 import com.diyiliu.util.Constant;
 
 import java.awt.*;
@@ -15,12 +17,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ProductEnemyTank extends Thread {
 
     private AtomicInteger count;
-    private Vector<EnemyTank> enemyTanks;
+    private Vector<Tank> enemyTanks;
 
-    public ProductEnemyTank(AtomicInteger count, Vector<EnemyTank> enemyTanks){
+    private Vector<Bullet> bullets;
+
+    public ProductEnemyTank(AtomicInteger count, Vector<Tank> enemyTanks, Vector<Bullet> bullets){
 
         this.count = count;
         this.enemyTanks = enemyTanks;
+        this.bullets = bullets;
     }
 
     @Override
@@ -38,30 +43,15 @@ public class ProductEnemyTank extends Thread {
                 break;
             }
 
-            EnemyTank enemyTank = new EnemyTank(enemyTanks);
+            EnemyTank enemyTank = new EnemyTank(enemyTanks, bullets);
             enemyTank.setX(10);
             enemyTank.setY(10);
             enemyTank.setSpeed(2);
-            enemyTank.setDirect(Constant.Derict.DERICT_DOWN);
+            enemyTank.getBulletCount().set(2);
+            enemyTank.setDirect(Constant.Derict.DIRECT_DOWN);
             enemyTank.setColor(Color.CYAN);
             enemyTanks.add(enemyTank);
             new Thread(enemyTank).start();
         }
-    }
-
-    public AtomicInteger getCount() {
-        return count;
-    }
-
-    public void setCount(AtomicInteger count) {
-        this.count = count;
-    }
-
-    public Vector<EnemyTank> getEnemyTanks() {
-        return enemyTanks;
-    }
-
-    public void setEnemyTanks(Vector<EnemyTank> enemyTanks) {
-        this.enemyTanks = enemyTanks;
     }
 }

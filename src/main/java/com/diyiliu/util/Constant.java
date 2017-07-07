@@ -9,10 +9,10 @@ public final class Constant {
 
     public enum  Derict {
         ;
-        public final static int  DERICT_UP = 0;
-        public final static int  DERICT_LEFT = 1;
-        public final static int  DERICT_DOWN = 2;
-        public final static int  DERICT_RIGHT = 3;
+        public final static int DIRECT_UP = 0;
+        public final static int DIRECT_LEFT = 1;
+        public final static int DIRECT_DOWN = 2;
+        public final static int DIRECT_RIGHT = 3;
     }
 
     public enum Draw {
@@ -23,8 +23,8 @@ public final class Constant {
 
     public enum Army {
         ;
-        public final static int ARMY_HERO = 0;
-        public final static int ARMY_ENEMY = 1;
+        public final static int ARMY_HERO = 1;
+        public final static int ARMY_ENEMY = 0;
     }
 
 }

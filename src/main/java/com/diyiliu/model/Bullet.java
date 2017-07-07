@@ -1,5 +1,6 @@
 package com.diyiliu.model;
 
+import com.diyiliu.model.base.Tank;
 import com.diyiliu.util.Constant;
 
 import java.awt.*;
@@ -19,13 +20,16 @@ public class Bullet extends Thread {
 
     private boolean live = true;
 
+    private int type = Constant.Army.ARMY_ENEMY;
+
+    private Tank tank;
+
+
     public Bullet(int x, int y, int direct) {
         this.x = x;
         this.y = y;
         this.direct = direct;
     }
-
-
 
     @Override
     public void run() {
@@ -40,19 +44,19 @@ public class Bullet extends Thread {
 
             switch (direct) {
 
-                case Constant.Derict.DERICT_UP:
+                case Constant.Derict.DIRECT_UP:
 
                     y -= speed;
                     break;
-                case Constant.Derict.DERICT_LEFT:
+                case Constant.Derict.DIRECT_LEFT:
 
                     x -= speed;
                     break;
-                case Constant.Derict.DERICT_DOWN:
+                case Constant.Derict.DIRECT_DOWN:
 
                     y += speed;
                     break;
-                case Constant.Derict.DERICT_RIGHT:
+                case Constant.Derict.DIRECT_RIGHT:
 
                     x += speed;
                     break;
@@ -113,5 +117,21 @@ public class Bullet extends Thread {
 
     public void setLive(boolean live) {
         this.live = live;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public Tank getTank() {
+        return tank;
+    }
+
+    public void setTank(Tank tank) {
+        this.tank = tank;
     }
 }

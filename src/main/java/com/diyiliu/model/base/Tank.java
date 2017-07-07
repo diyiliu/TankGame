@@ -14,8 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Tank {
 
-    protected int type = Constant.Army.ARMY_ENEMY;
-
     protected int x;
     protected int y;
 
@@ -24,7 +22,11 @@ public class Tank {
 
     protected Color color;
 
-    protected Bullet bullet;
+    protected int type;
+
+    protected Vector<Bullet> bullets = new Vector<>();
+
+    protected AtomicInteger bulletCount = new AtomicInteger(1);
 
     // 可以移动（direct 方向）
     protected boolean movable = true;
@@ -43,8 +45,31 @@ public class Tank {
         this.color = color;
     }
 
+    /**
+     * 装弹
+     */
+    public boolean loadBullets(){
+
+        for (int i = 0; i < bullets.size(); i++){
+
+            Bullet bullet = bullets.get(i);
+            if (!bullet.isAlive()){
+
+                bullets.remove(bullet);
+                bulletCount.incrementAndGet();
+            }
+        }
+
+        if (bulletCount.get() < 1){
+
+            return false;
+        }
+
+        return true;
+    }
+
     public boolean moveUP() {
-        setDirect(Constant.Derict.DERICT_UP);
+        setDirect(Constant.Derict.DIRECT_UP);
         y = getY() - getSpeed();
 
         if (y < 0) {
@@ -59,7 +84,7 @@ public class Tank {
     }
 
     public boolean moveLeft() {
-        setDirect(Constant.Derict.DERICT_LEFT);
+        setDirect(Constant.Derict.DIRECT_LEFT);
         x = getX() - getSpeed();
 
         if (x < 0) {
@@ -75,7 +100,7 @@ public class Tank {
     }
 
     public boolean moveDown() {
-        setDirect(Constant.Derict.DERICT_DOWN);
+        setDirect(Constant.Derict.DIRECT_DOWN);
         y = getY() + getSpeed();
 
         if (y + 80 > Constant.Draw.PANEL_HEIGHT) {
@@ -90,7 +115,7 @@ public class Tank {
     }
 
     public boolean moveRight() {
-        setDirect(Constant.Derict.DERICT_RIGHT);
+        setDirect(Constant.Derict.DIRECT_RIGHT);
         x = getX() + getSpeed();
 
         if (x + 45 > Constant.Draw.PANEL_WIDTH) {
@@ -110,7 +135,7 @@ public class Tank {
 
         Tank tank;
         switch (direct) {
-            case Constant.Derict.DERICT_UP:
+            case Constant.Derict.DIRECT_UP:
                 for (int i = 0; i < size; i++) {
                     tank = (Tank) tanks.get(i);
 
@@ -122,7 +147,7 @@ public class Tank {
                     }
                 }
                 break;
-            case Constant.Derict.DERICT_LEFT:
+            case Constant.Derict.DIRECT_LEFT:
 
                 for (int i = 0; i < size; i++) {
                     tank = (Tank) tanks.get(i);
@@ -135,7 +160,7 @@ public class Tank {
                     }
                 }
                 break;
-            case Constant.Derict.DERICT_DOWN:
+            case Constant.Derict.DIRECT_DOWN:
                 for (int i = 0; i < size; i++) {
                     tank = (Tank) tanks.get(i);
 
@@ -147,7 +172,7 @@ public class Tank {
                     }
                 }
                 break;
-            case Constant.Derict.DERICT_RIGHT:
+            case Constant.Derict.DIRECT_RIGHT:
 
                 for (int i = 0; i < size; i++) {
                     tank = (Tank) tanks.get(i);
@@ -171,19 +196,19 @@ public class Tank {
         int direct = getDirect();
         int i, j;
         switch (direct) {
-            case Constant.Derict.DERICT_UP:
+            case Constant.Derict.DIRECT_UP:
                 i = getX() + 15;
                 j = getY();
                 break;
-            case Constant.Derict.DERICT_LEFT:
+            case Constant.Derict.DIRECT_LEFT:
                 i = getX();
                 j = getY() + 15;
                 break;
-            case Constant.Derict.DERICT_DOWN:
+            case Constant.Derict.DIRECT_DOWN:
                 i = getX() + 15;
                 j = getY() + 30;
                 break;
-            case Constant.Derict.DERICT_RIGHT:
+            case Constant.Derict.DIRECT_RIGHT:
                 i = getX() + 30;
                 j = getY() + 15;
                 break;
@@ -195,6 +220,7 @@ public class Tank {
 
         Bullet bullet = new Bullet(i, j, direct);
         bullet.setColor(this.getColor());
+        bullet.setTank(this);
 
         return bullet;
     }
@@ -240,27 +266,23 @@ public class Tank {
         this.color = color;
     }
 
-    public Bullet getBullet() {
-        return bullet;
-    }
-
-    public void setBullet(Bullet bullet) {
-        this.bullet = bullet;
-    }
-
-    public AtomicInteger getLives() {
-        return lives;
-    }
-
-    public void setLives(AtomicInteger lives) {
-        this.lives = lives;
-    }
-
     public int getType() {
         return type;
     }
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public AtomicInteger getLives() {
+        return lives;
+    }
+
+    public Vector<Bullet> getBullets() {
+        return bullets;
+    }
+
+    public AtomicInteger getBulletCount() {
+        return bulletCount;
     }
 }
