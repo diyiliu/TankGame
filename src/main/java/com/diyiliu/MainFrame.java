@@ -2,7 +2,6 @@ package com.diyiliu;
 
 import com.diyiliu.panel.DrawPanel;
 import com.diyiliu.panel.PromptPanel;
-import com.diyiliu.thread.MusicPlayer;
 import com.diyiliu.util.Constant;
 import com.diyiliu.util.SoundMusic;
 
@@ -98,7 +97,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 this.setVisible(true);
 
                 SoundMusic.buildPreludeMusic();
-                SoundMusic.buildBackgroudMusic();
+                SoundMusic.buildBackgroundMusic();
             }
         }
     }

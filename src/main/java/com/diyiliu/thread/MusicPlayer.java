@@ -22,6 +22,9 @@ public class MusicPlayer extends Thread {
     private SourceDataLine dataLine;
     private AudioInputStream audioInputStream;
 
+    // 停止音乐
+    private boolean quitFlag = false;
+
     public MusicPlayer(String path) {
 
         this.path = path;
@@ -71,6 +74,9 @@ public class MusicPlayer extends Thread {
                 while ((length = audioInputStream.read(buf)) > -1) {
 
                     dataLine.write(buf, 0, length);
+                    if (quitFlag){
+                        break;
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -95,13 +101,11 @@ public class MusicPlayer extends Thread {
      * 停止
      */
     public void quit() {
+        quitFlag = true;
 
-        if (dataLine != null && dataLine.isRunning()) {
-
-            dataLine.drain();
-            dataLine.close();
+        if (loop) {
+            loop = false;
         }
-
         close();
     }
 
