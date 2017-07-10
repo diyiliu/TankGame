@@ -6,8 +6,10 @@ import com.diyiliu.model.EnemyTank;
 import com.diyiliu.model.HeroTank;
 import com.diyiliu.model.base.Tank;
 import com.diyiliu.panel.base.BasePanel;
+import com.diyiliu.thread.MusicPlayer;
 import com.diyiliu.thread.ProductEnemyTank;
 import com.diyiliu.util.Constant;
+import com.diyiliu.util.SoundMusic;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +33,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
     // 敌人坦克画面数量（不超过5个）
     private AtomicInteger panelEnemy = new AtomicInteger(0);
 
-    private int enCount = 10;
+    private int enCount = 5;
     private AtomicInteger enemyCount = new AtomicInteger(enCount);
 
     private Vector<Tank> tanks = new Vector<>();
@@ -50,7 +52,6 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
     private EnemyTank enemyFlag;
 
     public DrawPanel() {
-
         heroTank = new HeroTank();
         heroTank.setSpeed(3);
         heroTank.getLives().set(3);
@@ -164,6 +165,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
                         // 子弹终结
                         bullet.setLive(false);
+                        SoundMusic.buildHitMusic();
 
                         // 坦克生命减一
                         int life = t.getLives().decrementAndGet();
@@ -173,13 +175,23 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
                             bombs.add(bomb);
 
                             tanks.remove(t);
-                        }
 
-                        // 得分,画面坦克数量减1
-                        if (bullet.getType() == Constant.Army.ARMY_HERO) {
+                            // 得分,画面坦克数量减1
+                            if (bullet.getType() == Constant.Army.ARMY_HERO) {
 
-                            score.incrementAndGet();
-                            panelEnemy.decrementAndGet();
+                                score.incrementAndGet();
+                                panelEnemy.decrementAndGet();
+
+                                if (panelEnemy.get() < 1){
+
+                                    SoundMusic.buildWinMusic();
+                                }
+                            }
+
+                            if (t.getType() == Constant.Army.ARMY_HERO){
+
+                                SoundMusic.buildLoseMusic();
+                            }
                         }
 
                         break;
