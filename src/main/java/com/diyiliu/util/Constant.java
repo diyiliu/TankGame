@@ -17,6 +17,7 @@ public final class Constant {
 
         public final static int DOWN_OFFSET = 90;
         public final static int RIGHT_OFFSET = 35;
+
     }
 
     public enum Command {

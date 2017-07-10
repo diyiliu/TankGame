@@ -17,12 +17,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ProductEnemyTank extends Thread {
 
     private AtomicInteger count;
+
+    private AtomicInteger panelCount;
     private Vector<Tank> enemyTanks;
 
     private Vector<Bullet> bullets;
 
-    public ProductEnemyTank(AtomicInteger count, Vector<Tank> enemyTanks, Vector<Bullet> bullets){
+    public ProductEnemyTank(AtomicInteger panelCount, AtomicInteger count, Vector<Tank> enemyTanks, Vector<Bullet> bullets){
 
+        this.panelCount = panelCount;
         this.count = count;
         this.enemyTanks = enemyTanks;
         this.bullets = bullets;
@@ -38,20 +41,25 @@ public class ProductEnemyTank extends Thread {
                 e.printStackTrace();
             }
 
-            if (count.getAndDecrement() < 1){
+            if (count.get() < 1){
 
                 break;
             }
 
-            EnemyTank enemyTank = new EnemyTank(enemyTanks, bullets);
-            enemyTank.setX(10);
-            enemyTank.setY(10);
-            enemyTank.setSpeed(2);
-            enemyTank.getBulletCount().set(1);
-            enemyTank.setDirect(Constant.Direct.DIRECT_DOWN);
-            enemyTank.setColor(Color.CYAN);
-            enemyTanks.add(enemyTank);
-            new Thread(enemyTank).start();
+            if (panelCount.get() < 5){
+                EnemyTank enemyTank = new EnemyTank(enemyTanks, bullets);
+                enemyTank.setX(10);
+                enemyTank.setY(10);
+                enemyTank.setSpeed(2);
+                enemyTank.getBulletCount().set(1);
+                enemyTank.setDirect(Constant.Direct.DIRECT_DOWN);
+                enemyTank.setColor(Color.CYAN);
+                enemyTanks.add(enemyTank);
+                new Thread(enemyTank).start();
+
+                panelCount.incrementAndGet();
+                count.decrementAndGet();
+            }
         }
     }
 }

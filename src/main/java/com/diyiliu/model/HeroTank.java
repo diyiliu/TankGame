@@ -12,6 +12,14 @@ import java.awt.*;
  */
 public class HeroTank extends Tank {
 
+
+    public HeroTank(int x, int y, int direct) {
+
+        this.x = x;
+        this.y = y;
+        this.direct = direct;
+    }
+
     public HeroTank() {
 
         color = Color.YELLOW;

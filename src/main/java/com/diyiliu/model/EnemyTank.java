@@ -23,6 +23,13 @@ public class EnemyTank extends Tank implements Runnable {
         this.bulletVector = bullets;
     }
 
+    public EnemyTank(int x, int y, int direct) {
+
+        this.x = x;
+        this.y = y;
+        this.direct = direct;
+    }
+
     @Override
     public void run() {
 

@@ -1,7 +1,7 @@
 package com.diyiliu;
 
 import com.diyiliu.panel.DrawPanel;
-import com.diyiliu.panel.LevelPanel;
+import com.diyiliu.panel.PromptPanel;
 import com.diyiliu.util.Constant;
 
 import javax.swing.*;
@@ -19,7 +19,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
     private DrawPanel drawPanel;
 
-    private LevelPanel levelPanel;
+    private PromptPanel promptPanel;
 
     public MainFrame() {
         Font font = new Font("微软雅黑", Font.PLAIN, 12);
@@ -51,9 +51,9 @@ public class MainFrame extends JFrame implements ActionListener {
         jm.add(jmi2);
         jm.add(jmi3);
 
-        levelPanel = new LevelPanel(1);
-        this.add(levelPanel);
-        new Thread(levelPanel).start();
+        promptPanel = new PromptPanel("stage: 1");
+        this.add(promptPanel);
+        new Thread(promptPanel).start();
 
         this.setJMenuBar(jmb);
         this.setSize(Constant.Config.FRAME_WIDTH, Constant.Config.FRAME_HEIGHT);
@@ -84,8 +84,8 @@ public class MainFrame extends JFrame implements ActionListener {
 
         if (e.getActionCommand().equals(Constant.Command.START)) {
 
-            levelPanel.setTime(-1);
-            this.remove(levelPanel);
+            promptPanel.setTime(-1);
+            this.remove(promptPanel);
 
             if (drawPanel == null){
                 drawPanel = new DrawPanel();

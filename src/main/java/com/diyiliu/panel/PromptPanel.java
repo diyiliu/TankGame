@@ -6,19 +6,19 @@ import com.diyiliu.util.Constant;
 import java.awt.*;
 
 /**
- * Description: LevelPanel
+ * Description: PromptPanel
  * Author: DIYILIU
  * Update: 2017-07-07 15:49
  */
-public class LevelPanel extends BasePanel implements Runnable {
+public class PromptPanel extends BasePanel implements Runnable {
 
-    private int level;
+    private String content;
 
     private int time = 1;
 
-    public LevelPanel(int level){
+    public PromptPanel(String content){
 
-        this.level = level;
+        this.content = content;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class LevelPanel extends BasePanel implements Runnable {
 
         if (time % 2 == 0){
             g.setColor(Color.WHITE);
-            g.drawString("stage: " + level, Constant.Config.PANEL_WIDTH / 2  - 50 , Constant.Config.PANEL_HEIGHT / 2 - 50);
+            g.drawString(content, Constant.Config.PANEL_WIDTH / 2  - 50 , Constant.Config.PANEL_HEIGHT / 2 - 50);
         }
     }
 
@@ -52,9 +52,9 @@ public class LevelPanel extends BasePanel implements Runnable {
 
         font = new Font("微软雅黑", Font.PLAIN, 12);
         g.setFont(font);
-        g.drawString("top1: 900", Constant.Config.PANEL_WIDTH + 20, 50);
-        g.drawString("top2: 500", Constant.Config.PANEL_WIDTH + 20, 70);
-        g.drawString("top3: 200", Constant.Config.PANEL_WIDTH + 20, 90);
+        g.drawString("top1: 900", Constant.Config.PANEL_WIDTH + 20, 55);
+        g.drawString("top2: 500", Constant.Config.PANEL_WIDTH + 20, 75);
+        g.drawString("top3: 200", Constant.Config.PANEL_WIDTH + 20, 95);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.diyiliu.panel;
 
 import com.diyiliu.model.Bomb;
 import com.diyiliu.model.Bullet;
+import com.diyiliu.model.EnemyTank;
 import com.diyiliu.model.HeroTank;
 import com.diyiliu.model.base.Tank;
 import com.diyiliu.panel.base.BasePanel;
@@ -27,6 +28,9 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
     private boolean friendlyFire = false;
 
+    // 敌人坦克画面数量（不超过5个）
+    private AtomicInteger panelEnemy = new AtomicInteger(0);
+
     private int enCount = 10;
     private AtomicInteger enemyCount = new AtomicInteger(enCount);
 
@@ -37,8 +41,13 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
     // 爆炸
     private Vector<Bomb> bombs = new Vector<>();
 
+    // 积分
+    private AtomicInteger score = new AtomicInteger(0);
 
     private ImageIcon starImage;
+
+    private HeroTank heroFlag;
+    private EnemyTank enemyFlag;
 
     public DrawPanel() {
 
@@ -49,9 +58,17 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
         tanks.add(heroTank);
 
-        new ProductEnemyTank(enemyCount, tanks, bullets).start();
+        new ProductEnemyTank(panelEnemy, enemyCount, tanks, bullets).start();
 
         starImage = new ImageIcon(ClassLoader.getSystemResource("star3.png"));
+
+        heroFlag = new HeroTank(Constant.Config.PANEL_WIDTH + 20, Constant.Config.PANEL_HEIGHT - Constant.Config.DOWN_OFFSET, Constant.Direct.DIRECT_UP);
+        heroFlag.setColor(Color.ORANGE);
+        heroFlag.getLives().set(0);
+
+
+        enemyFlag = new EnemyTank(Constant.Config.PANEL_WIDTH + 20, Constant.Config.PANEL_HEIGHT - Constant.Config.DOWN_OFFSET - 50, Constant.Direct.DIRECT_UP);
+        enemyFlag.setColor(Color.CYAN);
     }
 
     @Override
@@ -75,6 +92,25 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
         g.setColor(Color.GRAY);
         g.fillRect(Constant.Config.PANEL_WIDTH, 0,
                 Constant.Config.FRAME_WIDTH - Constant.Config.PANEL_HEIGHT, Constant.Config.FRAME_HEIGHT);
+
+        g.drawImage(flagImg.getImage(), Constant.Config.PANEL_WIDTH + 20, 10,
+                20, 20, this);
+        Font font = new Font("宋体", Font.BOLD, 18);
+        g.setFont(font);
+        g.setColor(Color.white);
+        g.drawString(String.valueOf(score.get()), Constant.Config.PANEL_WIDTH + 70, 25);
+
+
+        g.setColor(enemyFlag.getColor());
+        g.drawString(String.valueOf(enCount - score.get()), Constant.Config.PANEL_WIDTH + 70,
+                Constant.Config.PANEL_HEIGHT - Constant.Config.DOWN_OFFSET - 30);
+
+        g.setColor(heroFlag.getColor());
+        g.drawString(String.valueOf(heroTank.getLives().get()), Constant.Config.PANEL_WIDTH + 70,
+                Constant.Config.PANEL_HEIGHT - Constant.Config.DOWN_OFFSET + 20);
+
+        drawTank(enemyFlag, g);
+        drawTank(heroFlag, g);
 
 
         if (enemyCount.get() == enCount) {
@@ -137,6 +173,13 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
                             bombs.add(bomb);
 
                             tanks.remove(t);
+                        }
+
+                        // 得分,画面坦克数量减1
+                        if (bullet.getType() == Constant.Army.ARMY_HERO) {
+
+                            score.incrementAndGet();
+                            panelEnemy.decrementAndGet();
                         }
 
                         break;
