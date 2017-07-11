@@ -14,13 +14,13 @@ public class SoundMusic {
 
     public static void buildPreludeMusic(){
 
-        new MusicPlayer(ClassLoader.getSystemResource("music/5170.wav").getPath()).start();
+        new MusicPlayer(ClassLoader.getSystemResource("music/5170.wav")).start();
     }
 
     public static void buildBackgroundMusic(){
 
         if (backgroundMusic == null || !backgroundMusic.isAlive()){
-            backgroundMusic =  new MusicPlayer(ClassLoader.getSystemResource("music/background.mid").getPath(), true);
+            backgroundMusic =  new MusicPlayer(ClassLoader.getSystemResource("music/background.mid"), true);
             backgroundMusic.setDelay(5000);
             backgroundMusic.start();
         }
@@ -28,18 +28,18 @@ public class SoundMusic {
 
     public static void buildHitMusic(){
 
-        new MusicPlayer(ClassLoader.getSystemResource("music/explode.wav").getPath()).start();
+        new MusicPlayer(ClassLoader.getSystemResource("music/explode.wav")).start();
     }
 
     public static void buildWinMusic(){
 
-        new MusicPlayer(ClassLoader.getSystemResource("music/levelup.wav").getPath()).start();
+        new MusicPlayer(ClassLoader.getSystemResource("music/levelup.wav")).start();
         backgroundMusic.quit();
     }
 
     public static void buildLoseMusic(){
 
-        new MusicPlayer(ClassLoader.getSystemResource("music/over.wav").getPath()).start();
+        new MusicPlayer(ClassLoader.getSystemResource("music/over.wav")).start();
         backgroundMusic.quit();
     }
 }

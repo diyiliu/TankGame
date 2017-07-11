@@ -6,6 +6,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.SourceDataLine;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * Description: MusicPlayer
@@ -14,7 +16,6 @@ import java.io.IOException;
  */
 public class MusicPlayer extends Thread {
 
-    private String path;
     private boolean loop = false;
 
     private int delay;
@@ -22,17 +23,20 @@ public class MusicPlayer extends Thread {
     private SourceDataLine dataLine;
     private AudioInputStream audioInputStream;
 
+    // 音频路径
+    private URL url;
+
     // 停止音乐
     private boolean quitFlag = false;
 
-    public MusicPlayer(String path) {
+    public MusicPlayer(URL url) {
 
-        this.path = path;
+        this.url = url;
     }
 
-    public MusicPlayer(String path, boolean loop) {
+    public MusicPlayer(URL url, boolean loop) {
 
-        this.path = path;
+        this.url = url;
         this.loop = loop;
     }
 
@@ -52,6 +56,8 @@ public class MusicPlayer extends Thread {
         do {
             play();
         } while (loop);
+
+        close();
     }
 
     /**
@@ -60,7 +66,7 @@ public class MusicPlayer extends Thread {
     public void play() {
 
         try {
-            audioInputStream = AudioSystem.getAudioInputStream(new File(path));
+            audioInputStream = AudioSystem.getAudioInputStream(url);
             AudioFormat audioFormat = audioInputStream.getFormat();
 
             dataLine = AudioSystem.getSourceDataLine(audioFormat);
@@ -68,7 +74,7 @@ public class MusicPlayer extends Thread {
 
             dataLine.start();
             int length;
-            byte[] buf = new byte[1024];
+            byte[] buf = new byte[512];
 
             try {
                 while ((length = audioInputStream.read(buf)) > -1) {
