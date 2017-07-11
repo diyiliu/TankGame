@@ -68,7 +68,7 @@ public class MusicPlayer extends Thread {
 
             dataLine.start();
             int length;
-            byte[] buf = new byte[512];
+            byte[] buf = new byte[1024];
 
             try {
                 while ((length = audioInputStream.read(buf)) > -1) {

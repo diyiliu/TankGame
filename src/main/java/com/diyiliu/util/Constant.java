@@ -1,11 +1,49 @@
 package com.diyiliu.util;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 /**
  * Description: Constant
  * Author: DIYILIU
  * Update: 2017-07-04 14:08
  */
 public final class Constant {
+
+    // 当前状态
+    public static boolean STATE = false;
+
+    // 等级信息
+    public final static ConcurrentLinkedQueue LEVEL_QUEUE = new ConcurrentLinkedQueue();
+
+    static {
+        Properties config = new Properties();
+        InputStream in = null;
+        try {
+            in = ClassLoader.getSystemResourceAsStream("config.properties");
+            config.load(in);
+
+            String stage1 = config.getProperty("stage1");
+            String stage2 = config.getProperty("stage2");
+            String stage3 = config.getProperty("stage3");
+
+            LEVEL_QUEUE.add(stage1.split(","));
+            LEVEL_QUEUE.add(stage2.split(","));
+            LEVEL_QUEUE.add(stage3.split(","));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (in != null){
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     public enum Config {
         ;
@@ -17,7 +55,6 @@ public final class Constant {
 
         public final static int DOWN_OFFSET = 90;
         public final static int RIGHT_OFFSET = 35;
-
     }
 
     public enum Command {

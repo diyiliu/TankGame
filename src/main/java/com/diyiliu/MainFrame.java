@@ -16,11 +16,13 @@ import java.awt.event.KeyEvent;
  * Author: DIYILIU
  * Update: 2017-07-04 14:01
  */
-public class MainFrame extends JFrame implements ActionListener {
+public class MainFrame extends JFrame implements ActionListener, Runnable {
 
     private DrawPanel drawPanel;
 
     private PromptPanel promptPanel;
+
+    private int stage = 1;
 
     public MainFrame() {
         Font font = new Font("微软雅黑", Font.PLAIN, 12);
@@ -52,6 +54,7 @@ public class MainFrame extends JFrame implements ActionListener {
         jm.add(jmi2);
         jm.add(jmi3);
 
+
         promptPanel = new PromptPanel("stage: 1");
         this.add(promptPanel);
         new Thread(promptPanel).start();
@@ -70,14 +73,67 @@ public class MainFrame extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setVisible(true);
-
-        Thread drawThread = new Thread(drawPanel);
-        drawThread.start();
     }
 
     public static void main(String[] args) {
 
-        new MainFrame();
+        new Thread(new MainFrame()).start();
+    }
+
+    @Override
+    public void run() {
+
+        while (this.isActive()) {
+
+            try {
+                Thread.sleep(1000);
+
+                // 晋级
+                if (Constant.STATE) {
+                    this.remove(drawPanel);
+                    Constant.LEVEL_QUEUE.poll();
+                    Constant.STATE = false;
+                    if (Constant.LEVEL_QUEUE.isEmpty()){
+
+                        promptPanel = new PromptPanel("Success");
+                        new Thread(promptPanel).start();
+                        this.add(promptPanel);
+                        this.setVisible(true);
+
+                        break;
+                    }
+
+                    promptPanel = new PromptPanel("stage: " + (++stage));
+                    new Thread(promptPanel).start();
+                    this.add(promptPanel);
+                    this.setVisible(true);
+
+                    Thread.sleep(3000);
+
+                    promptPanel.setTime(-1);
+                    this.remove(promptPanel);
+                    drawPanel = new DrawPanel();
+                    new Thread(drawPanel).start();
+                    this.add(drawPanel);
+                    this.addKeyListener(drawPanel);
+                    this.setVisible(true);
+
+                    SoundMusic.buildPreludeMusic();
+                    SoundMusic.buildBackgroundMusic();
+
+                }else if (drawPanel != null && !drawPanel.isLive()){
+                    this.remove(drawPanel);
+
+                    promptPanel = new PromptPanel("Game Over");
+                    new Thread(promptPanel).start();
+                    this.add(promptPanel);
+                    this.setVisible(true);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     @Override
@@ -88,7 +144,11 @@ public class MainFrame extends JFrame implements ActionListener {
             promptPanel.setTime(-1);
             this.remove(promptPanel);
 
-            if (drawPanel == null){
+            if (drawPanel == null || !drawPanel.isLive()) {
+                if (drawPanel != null) {
+                    this.remove(drawPanel);
+                }
+
                 drawPanel = new DrawPanel();
                 this.add(drawPanel);
                 this.addKeyListener(drawPanel);

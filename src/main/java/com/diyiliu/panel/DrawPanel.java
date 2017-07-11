@@ -34,7 +34,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
     private AtomicInteger panelEnemy = new AtomicInteger(0);
 
     private int enCount = 5;
-    private AtomicInteger enemyCount = new AtomicInteger(enCount);
+    private AtomicInteger enemyCount;
 
     private Vector<Tank> tanks = new Vector<>();
 
@@ -46,22 +46,33 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
     // 积分
     private AtomicInteger score = new AtomicInteger(0);
 
-    private ImageIcon starImage;
+    private ImageIcon  starImage = new ImageIcon(ClassLoader.getSystemResource("star3.png"));
 
     private HeroTank heroFlag;
     private EnemyTank enemyFlag;
 
+    private boolean live = true;
     public DrawPanel() {
+        String[] config = (String[]) Constant.LEVEL_QUEUE.peek();
+
+        enCount = Integer.valueOf(config[0]);
+        int speed = Integer.valueOf(config[1]);
+        int bulletCount = Integer.valueOf(config[2]);
+
+        // 敌人坦克
+        enemyCount = new AtomicInteger(enCount);
+
+        ProductEnemyTank productEnemyTank = new ProductEnemyTank(panelEnemy, enemyCount, tanks, bullets);
+        productEnemyTank.setSpeed(speed);
+        productEnemyTank.setBulletCount(bulletCount);
+        productEnemyTank.start();
+
         heroTank = new HeroTank();
         heroTank.setSpeed(3);
         heroTank.getLives().set(3);
         heroTank.getBulletCount().set(1);
 
         tanks.add(heroTank);
-
-        new ProductEnemyTank(panelEnemy, enemyCount, tanks, bullets).start();
-
-        starImage = new ImageIcon(ClassLoader.getSystemResource("star3.png"));
 
         heroFlag = new HeroTank(Constant.Config.PANEL_WIDTH + 20, Constant.Config.PANEL_HEIGHT - Constant.Config.DOWN_OFFSET, Constant.Direct.DIRECT_UP);
         heroFlag.setColor(Color.ORANGE);
@@ -74,7 +85,8 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (heroTank.getLives().get() > 0 &&
+                (panelEnemy.get() > 0 || enemyCount.get() > 0)) {
 
             try {
                 Thread.sleep(100);
@@ -84,6 +96,8 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
             repaint();
         }
+
+        live = false;
     }
 
     @Override
@@ -185,12 +199,15 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
                                 if (panelEnemy.get() < 1){
 
                                     SoundMusic.buildWinMusic();
+                                    Constant.STATE = true;
                                 }
                             }
 
                             if (t.getType() == Constant.Army.ARMY_HERO){
 
                                 SoundMusic.buildLoseMusic();
+                                // 终止生产坦克
+                                enemyCount.set(0);
                             }
                         }
 
@@ -323,5 +340,9 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
     @Override
     public void keyReleased(KeyEvent e) {
 
+    }
+
+    public boolean isLive() {
+        return live;
     }
 }

@@ -1,3 +1,4 @@
+import com.diyiliu.util.SoundMusic;
 import org.junit.Test;
 
 import javax.sound.sampled.*;
@@ -62,6 +63,11 @@ public class TestSound {
                 }
             }
         }
+    }
 
+    @Test
+    public void  test3(){
+
+        SoundMusic.buildBackgroundMusic();
     }
 }

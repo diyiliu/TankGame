@@ -19,7 +19,7 @@ public class SoundMusic {
 
     public static void buildBackgroundMusic(){
 
-        if (backgroundMusic == null){
+        if (backgroundMusic == null || !backgroundMusic.isAlive()){
             backgroundMusic =  new MusicPlayer(ClassLoader.getSystemResource("music/background.mid").getPath(), true);
             backgroundMusic.setDelay(5000);
             backgroundMusic.start();

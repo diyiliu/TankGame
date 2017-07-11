@@ -23,12 +23,16 @@ public class ProductEnemyTank extends Thread {
 
     private Vector<Bullet> bullets;
 
+    private int speed = 2;
+    private int bulletCount = 1;
+
     public ProductEnemyTank(AtomicInteger panelCount, AtomicInteger count, Vector<Tank> enemyTanks, Vector<Bullet> bullets){
 
         this.panelCount = panelCount;
         this.count = count;
         this.enemyTanks = enemyTanks;
         this.bullets = bullets;
+
     }
 
     @Override
@@ -36,7 +40,7 @@ public class ProductEnemyTank extends Thread {
 
         while (true){
             try {
-                Thread.sleep(3000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -50,8 +54,8 @@ public class ProductEnemyTank extends Thread {
                 EnemyTank enemyTank = new EnemyTank(enemyTanks, bullets);
                 enemyTank.setX(10);
                 enemyTank.setY(10);
-                enemyTank.setSpeed(2);
-                enemyTank.getBulletCount().set(1);
+                enemyTank.setSpeed(speed);
+                enemyTank.getBulletCount().set(bulletCount);
                 enemyTank.setDirect(Constant.Direct.DIRECT_DOWN);
                 enemyTank.setColor(Color.CYAN);
                 enemyTanks.add(enemyTank);
@@ -61,5 +65,13 @@ public class ProductEnemyTank extends Thread {
                 count.decrementAndGet();
             }
         }
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public void setBulletCount(int bulletCount) {
+        this.bulletCount = bulletCount;
     }
 }
