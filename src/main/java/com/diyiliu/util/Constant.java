@@ -19,6 +19,13 @@ public final class Constant {
     public final static ConcurrentLinkedQueue LEVEL_QUEUE = new ConcurrentLinkedQueue();
 
     static {
+       initData();
+    }
+
+    /**
+     * 装载配置
+     */
+    public static void initData(){
         Properties config = new Properties();
         InputStream in = null;
         try {

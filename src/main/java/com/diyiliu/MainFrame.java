@@ -23,6 +23,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
     private PromptPanel promptPanel;
 
     private int stage = 1;
+    private boolean wait = false;
 
     public MainFrame() {
         Font font = new Font("微软雅黑", Font.PLAIN, 12);
@@ -84,9 +85,12 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
     public void run() {
 
         while (this.isActive()) {
-
             try {
                 Thread.sleep(1000);
+
+                if (!wait){
+                    continue;
+                }
 
                 // 晋级
                 if (Constant.STATE) {
@@ -94,12 +98,12 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
                     Constant.LEVEL_QUEUE.poll();
                     Constant.STATE = false;
                     if (Constant.LEVEL_QUEUE.isEmpty()){
-
                         promptPanel = new PromptPanel("Success");
                         new Thread(promptPanel).start();
                         this.add(promptPanel);
                         this.setVisible(true);
 
+                        Constant.initData();
                         break;
                     }
 
@@ -128,6 +132,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
                     new Thread(promptPanel).start();
                     this.add(promptPanel);
                     this.setVisible(true);
+
+                    wait = false;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -148,6 +154,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
                 if (drawPanel != null) {
                     this.remove(drawPanel);
                 }
+                wait = true;
 
                 drawPanel = new DrawPanel();
                 this.add(drawPanel);
