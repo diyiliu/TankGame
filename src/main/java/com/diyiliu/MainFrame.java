@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Description: MainFrame
@@ -24,7 +24,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
     private PromptPanel promptPanel;
 
     private int stage = 1;
-    private boolean wait = false;
+
+    private AtomicBoolean wait = new AtomicBoolean(false);
 
     public MainFrame() {
         Font font = new Font("微软雅黑", Font.PLAIN, 12);
@@ -89,15 +90,16 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
             try {
                 Thread.sleep(1000);
 
-                if (!wait){
+                if (!wait.get()){
                     continue;
                 }
 
                 // 晋级
-                if (Constant.STATE) {
+                if (Constant.STATE.get()) {
                     this.remove(drawPanel);
                     Constant.LEVEL_QUEUE.poll();
-                    Constant.STATE = false;
+                    Constant.STATE.set(false);
+
                     if (Constant.LEVEL_QUEUE.isEmpty()){
                         promptPanel = new PromptPanel("Success");
                         new Thread(promptPanel).start();
@@ -134,7 +136,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
                     this.add(promptPanel);
                     this.setVisible(true);
 
-                    wait = false;
+                    wait.set(false);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -155,7 +157,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
                 if (drawPanel != null) {
                     this.remove(drawPanel);
                 }
-                wait = true;
+                wait.set(true);
 
                 drawPanel = new DrawPanel();
                 this.add(drawPanel);

@@ -15,7 +15,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Iterator;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -51,7 +53,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
     private HeroTank heroFlag;
     private EnemyTank enemyFlag;
 
-    private boolean live = true;
+    private AtomicBoolean live = new AtomicBoolean(true);
     public DrawPanel() {
         String[] config = (String[]) Constant.LEVEL_QUEUE.peek();
 
@@ -85,8 +87,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
     @Override
     public void run() {
-        while (heroTank.getLives().get() > 0 &&
-                (panelEnemy.get() > 0 || enemyCount.get() > 0)) {
+        while (live.get()) {
 
             try {
                 Thread.sleep(100);
@@ -96,8 +97,6 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
             repaint();
         }
-
-        live = false;
     }
 
     @Override
@@ -151,12 +150,12 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
             }
         }
 
-        for (int i = 0; i < bombs.size(); i++) {
+        for (Iterator iterator = bombs.iterator(); iterator.hasNext();) {
 
-            Bomb bomb = bombs.get(i);
+            Bomb bomb = (Bomb) iterator.next();
 
             if (bomb.getQueue().isEmpty()) {
-                bombs.remove(bomb);
+                iterator.remove();
             } else {
                 ImageIcon imageIcon = (ImageIcon) bomb.getQueue().poll();
                 g.drawImage(imageIcon.getImage(), bomb.getX(), bomb.getY(), 30, 30, Color.RED, this);
@@ -170,9 +169,9 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
             boolean hit = false;
             if (tanks != null && tanks.size() > 0) {
-                for (int i = 0; i < tanks.size(); i++) {
+                for (Iterator iterator = tanks.iterator(); iterator.hasNext();) {
 
-                    Tank t = (Tank) tanks.get(i);
+                    Tank t = (Tank) iterator.next();
 
                     if (hitTank(bullet, t, friendlyFire)) {
                         hit = true;
@@ -184,11 +183,10 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
                         // 坦克生命减一
                         int life = t.getLives().decrementAndGet();
                         if (life < 1) {
-
                             Bomb bomb = new Bomb(t.getX(), t.getY());
                             bombs.add(bomb);
 
-                            tanks.remove(t);
+                            iterator.remove();
 
                             // 得分,画面坦克数量减1
                             if (bullet.getType() == Constant.Army.ARMY_HERO) {
@@ -196,10 +194,14 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
                                 score.incrementAndGet();
                                 panelEnemy.decrementAndGet();
 
-                                if (panelEnemy.get() < 1){
+                                if (panelEnemy.get() < 1 && enemyCount.get() < 1){
 
                                     SoundMusic.buildWinMusic();
-                                    Constant.STATE = true;
+                                    Constant.STATE.set(true);
+                                    // 终止绘画
+                                    live.set(false);
+
+                                    break;
                                 }
                             }
 
@@ -208,6 +210,11 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
                                 SoundMusic.buildLoseMusic();
                                 // 终止生产坦克
                                 enemyCount.set(0);
+                                // 终止绘画
+                                live.set(false);
+
+                                killAll();
+                                break;
                             }
                         }
 
@@ -233,6 +240,20 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
         } else if (starImage.getDescription().contains("star4")) {
 
             starImage = new ImageIcon(ClassLoader.getSystemResource("star3.png"));
+        }
+    }
+
+    /**
+     * 杀死所有敌人坦克
+     * 1: 生命值为0
+     * 2: 移除队列
+     */
+    public void killAll(){
+
+        for (Iterator iterator = tanks.iterator(); iterator.hasNext();){
+            Tank tank = (Tank) iterator.next();
+            tank.getLives().set(0);
+            iterator.remove();
         }
     }
 
@@ -342,7 +363,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
     }
 
-    public boolean isLive() {
-        return live;
+    public Boolean isLive() {
+        return live.get();
     }
 }
