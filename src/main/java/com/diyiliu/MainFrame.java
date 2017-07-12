@@ -24,6 +24,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
     private PromptPanel promptPanel;
 
     private int stage = 1;
+    private int scoreTemp = 0;
 
     private AtomicBoolean wait = new AtomicBoolean(false);
 
@@ -85,7 +86,6 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
     @Override
     public void run() {
-
         while (this.isActive()) {
             try {
                 Thread.sleep(1000);
@@ -96,17 +96,19 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
                 // 晋级
                 if (Constant.STATE.get()) {
+                    scoreTemp = drawPanel.getScore();
                     this.remove(drawPanel);
                     Constant.LEVEL_QUEUE.poll();
                     Constant.STATE.set(false);
 
                     if (Constant.LEVEL_QUEUE.isEmpty()){
-                        promptPanel = new PromptPanel("Success");
+                        promptPanel = new PromptPanel("Success！ [积分:" + scoreTemp + "]");
                         new Thread(promptPanel).start();
                         this.add(promptPanel);
                         this.setVisible(true);
 
                         Constant.initData();
+                        scoreTemp = 0;
                         break;
                     }
 
@@ -115,11 +117,14 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
                     this.add(promptPanel);
                     this.setVisible(true);
 
-                    Thread.sleep(3000);
+                    Thread.sleep(2000);
 
                     promptPanel.setTime(-1);
                     this.remove(promptPanel);
+
                     drawPanel = new DrawPanel();
+                    drawPanel.setScore(scoreTemp);
+
                     new Thread(drawPanel).start();
                     this.add(drawPanel);
                     this.addKeyListener(drawPanel);
@@ -160,6 +165,8 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
                 wait.set(true);
 
                 drawPanel = new DrawPanel();
+                drawPanel.setScore(scoreTemp);
+
                 this.add(drawPanel);
                 this.addKeyListener(drawPanel);
                 new Thread(drawPanel).start();

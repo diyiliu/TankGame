@@ -54,6 +54,8 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
     private EnemyTank enemyFlag;
 
     private AtomicBoolean live = new AtomicBoolean(true);
+
+    private int death;
     public DrawPanel() {
         String[] config = (String[]) Constant.LEVEL_QUEUE.peek();
 
@@ -116,7 +118,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
 
         g.setColor(enemyFlag.getColor());
-        g.drawString(String.valueOf(enCount - score.get()), Constant.Config.PANEL_WIDTH + 70,
+        g.drawString(String.valueOf(enCount - death), Constant.Config.PANEL_WIDTH + 70,
                 Constant.Config.PANEL_HEIGHT - Constant.Config.DOWN_OFFSET - 30);
 
         g.setColor(heroFlag.getColor());
@@ -215,6 +217,9 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
                                 killAll();
                                 break;
+                            }else if (t.getType() == Constant.Army.ARMY_ENEMY){
+
+                                this.death++;
                             }
                         }
 
@@ -365,5 +370,13 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
     public Boolean isLive() {
         return live.get();
+    }
+
+    public int getScore() {
+        return score.get();
+    }
+
+    public void setScore(int score) {
+        this.score.set(score);
     }
 }

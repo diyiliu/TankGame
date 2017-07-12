@@ -48,13 +48,10 @@ public class PromptPanel extends BasePanel implements Runnable {
         Font font = new Font("宋体", Font.BOLD, 15);
         g.setFont(font);
         g.setColor(Color.white);
-        g.drawString("积分榜", Constant.Config.PANEL_WIDTH + 50, 30);
+        g.drawString("积分", Constant.Config.PANEL_WIDTH + 50, 30);
 
         font = new Font("微软雅黑", Font.PLAIN, 12);
         g.setFont(font);
-        g.drawString("top1: 900", Constant.Config.PANEL_WIDTH + 20, 55);
-        g.drawString("top2: 500", Constant.Config.PANEL_WIDTH + 20, 75);
-        g.drawString("top3: 200", Constant.Config.PANEL_WIDTH + 20, 95);
     }
 
     @Override
