@@ -26,8 +26,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
     private int stage = 1;
     private int scoreTemp = 0;
 
-    private AtomicBoolean wait = new AtomicBoolean(false);
-
+    private boolean wait = true;
     public MainFrame() {
         Font font = new Font("微软雅黑", Font.PLAIN, 12);
         UIManager.put("Menu.font", font);
@@ -86,20 +85,19 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
     @Override
     public void run() {
-        while (this.isActive()) {
+        while (true) {
             try {
                 Thread.sleep(1000);
 
-                if (!wait.get()){
+                if (wait || drawPanel.isLive()){
                     continue;
                 }
 
                 // 晋级
-                if (Constant.STATE.get()) {
+                if (drawPanel.getHeroTank().getLives().get() > 0) {
                     scoreTemp = drawPanel.getScore();
                     this.remove(drawPanel);
                     Constant.LEVEL_QUEUE.poll();
-                    Constant.STATE.set(false);
 
                     if (Constant.LEVEL_QUEUE.isEmpty()){
                         promptPanel = new PromptPanel("Success！ [积分:" + scoreTemp + "]");
@@ -107,6 +105,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
                         this.add(promptPanel);
                         this.setVisible(true);
 
+                        wait = true;
                         Constant.initData();
                         scoreTemp = 0;
                         break;
@@ -133,15 +132,14 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
                     SoundMusic.buildPreludeMusic();
                     SoundMusic.buildBackgroundMusic();
 
-                }else if (drawPanel != null && !drawPanel.isLive()){
+                }else {
                     this.remove(drawPanel);
 
                     promptPanel = new PromptPanel("Game Over");
                     new Thread(promptPanel).start();
                     this.add(promptPanel);
                     this.setVisible(true);
-
-                    wait.set(false);
+                    wait = true;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -162,7 +160,6 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
                 if (drawPanel != null) {
                     this.remove(drawPanel);
                 }
-                wait.set(true);
 
                 drawPanel = new DrawPanel();
                 drawPanel.setScore(scoreTemp);
@@ -175,6 +172,7 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
                 SoundMusic.buildPreludeMusic();
                 SoundMusic.buildBackgroundMusic();
+                wait = false;
             }
         }
     }

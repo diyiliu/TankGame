@@ -115,8 +115,8 @@ public class Bullet extends Thread {
         return live;
     }
 
-    public void setLive(boolean live) {
-        this.live = live;
+    public void stopRunning() {
+        this.live = false;
     }
 
     public int getType() {

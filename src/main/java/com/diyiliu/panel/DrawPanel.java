@@ -53,7 +53,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
     private HeroTank heroFlag;
     private EnemyTank enemyFlag;
 
-    private AtomicBoolean live = new AtomicBoolean(true);
+    private boolean live = true;
 
     private int death;
     public DrawPanel() {
@@ -89,7 +89,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
     @Override
     public void run() {
-        while (live.get()) {
+        while (live) {
 
             try {
                 Thread.sleep(100);
@@ -179,7 +179,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
                         hit = true;
 
                         // 子弹终结
-                        bullet.setLive(false);
+                        bullet.stopRunning();
                         SoundMusic.buildHitMusic();
 
                         // 坦克生命减一
@@ -199,9 +199,8 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
                                 if (panelEnemy.get() < 1 && enemyCount.get() < 1){
 
                                     SoundMusic.buildWinMusic();
-                                    Constant.STATE.set(true);
                                     // 终止绘画
-                                    live.set(false);
+                                    stopRunning();
 
                                     break;
                                 }
@@ -213,7 +212,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
                                 // 终止生产坦克
                                 enemyCount.set(0);
                                 // 终止绘画
-                                live.set(false);
+                                stopRunning();
 
                                 killAll();
                                 break;
@@ -369,7 +368,12 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
     }
 
     public Boolean isLive() {
-        return live.get();
+        return live;
+    }
+
+    public void stopRunning(){
+
+        live = false;
     }
 
     public int getScore() {
@@ -378,5 +382,9 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
     public void setScore(int score) {
         this.score.set(score);
+    }
+
+    public HeroTank getHeroTank() {
+        return heroTank;
     }
 }
