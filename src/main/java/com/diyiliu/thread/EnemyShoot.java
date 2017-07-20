@@ -30,7 +30,11 @@ public class EnemyShoot implements Runnable {
         while (tank.getLives().get() > 0){
 
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
+
+                if (Constant.GAME_PAUSE){
+                    continue;
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -1,15 +1,19 @@
 package com.diyiliu;
 
+import com.diyiliu.model.Bullet;
+import com.diyiliu.model.base.Tank;
 import com.diyiliu.panel.DrawPanel;
 import com.diyiliu.panel.PromptPanel;
 import com.diyiliu.util.Constant;
 import com.diyiliu.util.SoundMusic;
+import jdk.internal.org.objectweb.asm.tree.TableSwitchInsnNode;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -26,7 +30,9 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
     private int stage = 1;
     private int scoreTemp = 0;
 
-    private boolean wait = true;
+    // 线程锁
+    private Object object = new Object();
+
     public MainFrame() {
         Font font = new Font("微软雅黑", Font.PLAIN, 12);
         UIManager.put("Menu.font", font);
@@ -89,57 +95,64 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
             try {
                 Thread.sleep(1000);
 
-                if (wait || drawPanel.isLive()){
-                    continue;
-                }
+                synchronized (object) {
+                    if (drawPanel == null) {
 
-                // 晋级
-                if (drawPanel.getHeroTank().getLives().get() > 0) {
-                    scoreTemp = drawPanel.getScore();
-                    this.remove(drawPanel);
-                    Constant.LEVEL_QUEUE.poll();
+                        object.wait();
+                    }
 
-                    if (Constant.LEVEL_QUEUE.isEmpty()){
-                        promptPanel = new PromptPanel("Success！ [积分:" + scoreTemp + "]");
+                    if (drawPanel.isLive() || Constant.GAME_PAUSE) {
+                        continue;
+                    }
+
+                    // 晋级
+                    if (drawPanel.getHeroTank().getLives().get() > 0) {
+                        scoreTemp = drawPanel.getScore();
+                        this.remove(drawPanel);
+                        Constant.LEVEL_QUEUE.poll();
+
+                        if (Constant.LEVEL_QUEUE.isEmpty()) {
+                            promptPanel = new PromptPanel("Success！ [积分:" + scoreTemp + "]");
+                            new Thread(promptPanel).start();
+                            this.add(promptPanel);
+                            this.setVisible(true);
+
+                            Constant.initData();
+                            scoreTemp = 0;
+                            object.wait();
+                            break;
+                        }
+
+                        promptPanel = new PromptPanel("stage: " + (++stage));
                         new Thread(promptPanel).start();
                         this.add(promptPanel);
                         this.setVisible(true);
 
-                        wait = true;
-                        Constant.initData();
-                        scoreTemp = 0;
-                        break;
+                        Thread.sleep(2000);
+
+                        promptPanel.setTime(-1);
+                        this.remove(promptPanel);
+
+                        drawPanel = new DrawPanel();
+                        drawPanel.setScore(scoreTemp);
+
+                        new Thread(drawPanel).start();
+                        this.add(drawPanel);
+                        this.addKeyListener(drawPanel);
+                        this.setVisible(true);
+
+                        SoundMusic.buildPreludeMusic();
+                        SoundMusic.buildBackgroundMusic();
+
+                    } else {
+                        this.remove(drawPanel);
+
+                        promptPanel = new PromptPanel("Game Over");
+                        new Thread(promptPanel).start();
+                        this.add(promptPanel);
+                        this.setVisible(true);
+                        object.wait();
                     }
-
-                    promptPanel = new PromptPanel("stage: " + (++stage));
-                    new Thread(promptPanel).start();
-                    this.add(promptPanel);
-                    this.setVisible(true);
-
-                    Thread.sleep(2000);
-
-                    promptPanel.setTime(-1);
-                    this.remove(promptPanel);
-
-                    drawPanel = new DrawPanel();
-                    drawPanel.setScore(scoreTemp);
-
-                    new Thread(drawPanel).start();
-                    this.add(drawPanel);
-                    this.addKeyListener(drawPanel);
-                    this.setVisible(true);
-
-                    SoundMusic.buildPreludeMusic();
-                    SoundMusic.buildBackgroundMusic();
-
-                }else {
-                    this.remove(drawPanel);
-
-                    promptPanel = new PromptPanel("Game Over");
-                    new Thread(promptPanel).start();
-                    this.add(promptPanel);
-                    this.setVisible(true);
-                    wait = true;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -153,27 +166,40 @@ public class MainFrame extends JFrame implements ActionListener, Runnable {
 
         if (e.getActionCommand().equals(Constant.Command.START)) {
 
-            promptPanel.setTime(-1);
-            this.remove(promptPanel);
+            synchronized (object) {
+                if (Constant.GAME_PAUSE) {
+                    Constant.GAME_PAUSE = false;
+                } else {
+                    if (drawPanel == null || !drawPanel.isLive()) {
+                        promptPanel.setTime(-1);
+                        this.remove(promptPanel);
 
-            if (drawPanel == null || !drawPanel.isLive()) {
-                if (drawPanel != null) {
-                    this.remove(drawPanel);
+                        if (drawPanel != null) {
+                            this.remove(drawPanel);
+                        }
+
+                        drawPanel = new DrawPanel();
+                        drawPanel.setScore(scoreTemp);
+
+                        this.add(drawPanel);
+                        this.addKeyListener(drawPanel);
+                        new Thread(drawPanel).start();
+
+                        this.setVisible(true);
+
+                        SoundMusic.buildPreludeMusic();
+                        SoundMusic.buildBackgroundMusic();
+                        object.notify();
+                    }
                 }
-
-                drawPanel = new DrawPanel();
-                drawPanel.setScore(scoreTemp);
-
-                this.add(drawPanel);
-                this.addKeyListener(drawPanel);
-                new Thread(drawPanel).start();
-
-                this.setVisible(true);
-
-                SoundMusic.buildPreludeMusic();
-                SoundMusic.buildBackgroundMusic();
-                wait = false;
             }
+        } else if (e.getActionCommand().equals(Constant.Command.PAUSE)) {
+            if (drawPanel != null) {
+                Constant.GAME_PAUSE = true;
+            }
+        } else if (e.getActionCommand().equals(Constant.Command.EXIT)) {
+
+            System.exit(0);
         }
     }
 }

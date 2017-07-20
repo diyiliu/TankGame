@@ -32,18 +32,20 @@ public class EnemyTank extends Tank implements Runnable {
 
     @Override
     public void run() {
-
         // 发射子弹
         new Thread(new EnemyShoot(this, bulletVector)).start();
 
         while (lives.get() > 0) {
 
             try {
-                Thread.sleep(50);
+                Thread.sleep(100);
+
+                if (Constant.GAME_PAUSE) {
+                    continue;
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
             int direct = (int) (Math.random() * 4);
             persistMove(direct);
         }
@@ -51,7 +53,7 @@ public class EnemyTank extends Tank implements Runnable {
 
     public void persistMove(int direct) {
 
-        int step = (int) (Math.random() * 50 + 20);
+        int step = (int) (Math.random() * 100 + 5);
         switch (direct) {
             case Constant.Direct.DIRECT_UP:
 
@@ -61,7 +63,7 @@ public class EnemyTank extends Tank implements Runnable {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if (!moveUP() || checkTouch(tanks)) {
+                    if (!moveUP() || checkTouch(tanks) || Constant.GAME_PAUSE) {
                         break;
                     }
                 }
@@ -75,7 +77,7 @@ public class EnemyTank extends Tank implements Runnable {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if (!moveLeft() || checkTouch(tanks)) {
+                    if (!moveLeft() || checkTouch(tanks) || Constant.GAME_PAUSE) {
                         break;
                     }
                 }
@@ -88,7 +90,7 @@ public class EnemyTank extends Tank implements Runnable {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if (!moveDown() || checkTouch(tanks)) {
+                    if (!moveDown() || checkTouch(tanks) || Constant.GAME_PAUSE) {
                         break;
                     }
                 }
@@ -101,7 +103,7 @@ public class EnemyTank extends Tank implements Runnable {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if (!moveRight() || checkTouch(tanks)) {
+                    if (!moveRight() || checkTouch(tanks) || Constant.GAME_PAUSE) {
                         break;
                     }
                 }

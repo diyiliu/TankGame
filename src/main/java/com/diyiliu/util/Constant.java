@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Description: Constant
@@ -11,6 +12,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Update: 2017-07-04 14:08
  */
 public final class Constant {
+
+    public static Boolean GAME_PAUSE = false;
 
     // 等级信息
     public final static ConcurrentLinkedQueue LEVEL_QUEUE = new ConcurrentLinkedQueue();

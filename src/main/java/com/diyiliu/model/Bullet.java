@@ -38,6 +38,10 @@ public class Bullet extends Thread {
             try {
                 // 子弹延时间隔
                 Thread.sleep(50);
+
+                if (Constant.GAME_PAUSE) {
+                    continue;
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -64,7 +68,7 @@ public class Bullet extends Thread {
                     break;
             }
 
-            if (x < 0 || y < 0 || x > Constant.Config.PANEL_WIDTH || y > Constant.Config.PANEL_HEIGHT){
+            if (x < 0 || y < 0 || x > Constant.Config.PANEL_WIDTH || y > Constant.Config.PANEL_HEIGHT) {
 
                 break;
             }

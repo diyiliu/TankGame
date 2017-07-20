@@ -48,7 +48,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
     // 积分
     private AtomicInteger score = new AtomicInteger(0);
 
-    private ImageIcon  starImage = new ImageIcon(ClassLoader.getSystemResource("star3.png"));
+    private ImageIcon starImage = new ImageIcon(ClassLoader.getSystemResource("star3.png"));
 
     private HeroTank heroFlag;
     private EnemyTank enemyFlag;
@@ -56,6 +56,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
     private boolean live = true;
 
     private int death;
+
     public DrawPanel() {
         String[] config = (String[]) Constant.LEVEL_QUEUE.peek();
 
@@ -93,11 +94,11 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
             try {
                 Thread.sleep(100);
+
+                repaint();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            repaint();
         }
     }
 
@@ -152,7 +153,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
             }
         }
 
-        for (Iterator iterator = bombs.iterator(); iterator.hasNext();) {
+        for (Iterator iterator = bombs.iterator(); iterator.hasNext(); ) {
 
             Bomb bomb = (Bomb) iterator.next();
 
@@ -171,7 +172,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
             boolean hit = false;
             if (tanks != null && tanks.size() > 0) {
-                for (Iterator iterator = tanks.iterator(); iterator.hasNext();) {
+                for (Iterator iterator = tanks.iterator(); iterator.hasNext(); ) {
 
                     Tank t = (Tank) iterator.next();
 
@@ -196,7 +197,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
                                 score.incrementAndGet();
                                 panelEnemy.decrementAndGet();
 
-                                if (panelEnemy.get() < 1 && enemyCount.get() < 1){
+                                if (panelEnemy.get() < 1 && enemyCount.get() < 1) {
 
                                     SoundMusic.buildWinMusic();
                                     // 终止绘画
@@ -206,7 +207,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
                                 }
                             }
 
-                            if (t.getType() == Constant.Army.ARMY_HERO){
+                            if (t.getType() == Constant.Army.ARMY_HERO) {
 
                                 SoundMusic.buildLoseMusic();
                                 // 终止生产坦克
@@ -216,7 +217,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
                                 killAll();
                                 break;
-                            }else if (t.getType() == Constant.Army.ARMY_ENEMY){
+                            } else if (t.getType() == Constant.Army.ARMY_ENEMY) {
 
                                 this.death++;
                             }
@@ -252,9 +253,9 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
      * 1: 生命值为0
      * 2: 移除队列
      */
-    public void killAll(){
+    public void killAll() {
 
-        for (Iterator iterator = tanks.iterator(); iterator.hasNext();){
+        for (Iterator iterator = tanks.iterator(); iterator.hasNext(); ) {
             Tank tank = (Tank) iterator.next();
             tank.getLives().set(0);
             iterator.remove();
@@ -298,6 +299,11 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
     @Override
     public void keyPressed(KeyEvent e) {
+
+        if (Constant.GAME_PAUSE) {
+
+            return;
+        }
 
         switch (e.getKeyCode()) {
 
@@ -371,7 +377,7 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
         return live;
     }
 
-    public void stopRunning(){
+    public void stopRunning() {
 
         live = false;
     }
@@ -386,5 +392,13 @@ public class DrawPanel extends BasePanel implements KeyListener, Runnable {
 
     public HeroTank getHeroTank() {
         return heroTank;
+    }
+
+    public Vector<Tank> getTanks() {
+        return tanks;
+    }
+
+    public Vector<Bullet> getBullets() {
+        return bullets;
     }
 }

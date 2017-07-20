@@ -41,6 +41,10 @@ public class ProductEnemyTank extends Thread {
         while (true){
             try {
                 Thread.sleep(2000);
+
+                if (Constant.GAME_PAUSE){
+                    continue;
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
